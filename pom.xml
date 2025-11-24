@@ -21,6 +21,13 @@
         <testcontainers.version>1.17.6</testcontainers.version>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/elixir-europe/mars-repository-lib</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -86,6 +93,16 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-envers</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.elixir.mars</groupId>
+            <artifactId>mars-repository</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <dependencyManagement>
