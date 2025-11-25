@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class Sample {
+public class EvaSample {
 
     private String analysisAlias;
 

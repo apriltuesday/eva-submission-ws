@@ -16,7 +16,7 @@ public class EvaMetadata {
     private List<Analysis> analyses;
 
     @JsonProperty("sample")
-    private List<Sample> samples;
+    private List<EvaSample> samples;
 
     private List<File> files;
 
