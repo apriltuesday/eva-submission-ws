@@ -1,9 +1,11 @@
 package uk.ac.ebi.eva.submission.model.metadata;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class Project {
 
     private String title;
@@ -11,7 +13,7 @@ public class Project {
     private String description;
 
     @JsonProperty("taxId")
-    private int taxonomyId;
+    private Integer taxonomyId;
 
     private String centre;
 
