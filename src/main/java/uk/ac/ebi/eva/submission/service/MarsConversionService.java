@@ -44,7 +44,8 @@ import java.util.stream.Collectors;
 @Service
 public class MarsConversionService extends MarsReceiptProvider {
 
-    private ReceiptAccessionsMap accessionMap;
+    private ReceiptAccessionsMap studyAccessionMap;
+    private ReceiptAccessionsMap analysisAccessionMap;
 
     // Names of Comments and Parameters - must be kept in sync with ISA-JSON producer
     private static final String TAXONOMY_ID_KEY = "taxonomyId";
@@ -61,7 +62,8 @@ public class MarsConversionService extends MarsReceiptProvider {
 
     public MarsConversionService() {
         super("eva");
-        accessionMap = new ReceiptAccessionsMap();
+        studyAccessionMap = new ReceiptAccessionsMap();
+        analysisAccessionMap = new ReceiptAccessionsMap();
     }
 
     public JsonNode convertMarsToEvaJson(IsaJson marsIsaJson) {
@@ -79,9 +81,9 @@ public class MarsConversionService extends MarsReceiptProvider {
         for (Sample sample : study.getMaterials().getSamples()) {
             sampleMap.put(sample.getId(), sample);
         }
-        Map<String, CharacteristicType> characteristicCategoryMap = new HashMap<>();
+        Map<String, CharacteristicType> charCatMap = new HashMap<>();
         for (CharacteristicCategory cc : study.getCharacteristicCategories()) {
-            characteristicCategoryMap.put(cc.getId(), cc.getCharacteristicType());
+            charCatMap.put(cc.getId(), cc.getCharacteristicType());
         }
 
         // Create Submitter Details
@@ -105,6 +107,7 @@ public class MarsConversionService extends MarsReceiptProvider {
             }
         }
         evaMetadata.setProject(new Project(study.getTitle(), study.getDescription(), taxonomyId, centre));
+        // TODO need to provide a project accession, so fill in the receipt map here
 
         // Assume ISA is already filtered to only include EVA assays
         List<Analysis> analyses = new ArrayList<>();
@@ -167,6 +170,7 @@ public class MarsConversionService extends MarsReceiptProvider {
                 files.add(new File(analysisAlias, dataFile.getName(), md5checksum, fileSize));
                 analyses.add(new Analysis(analysisTitle, analysisAlias, analysisDescription, experimentType,
                                           referenceGenome));
+                // TODO need to provide an analysis accession, so fill in the receipt map here
 
                 // End with samples
                 // Walk back until you have no previous process, to be sure to collect all sample inputs
@@ -178,7 +182,8 @@ public class MarsConversionService extends MarsReceiptProvider {
                             String sampleInVcf = null;
                             String bioSampleAccession = null;
                             for (Characteristic characteristic : sampleToAdd.getCharacteristics()) {
-                                String characteristicName = characteristicCategoryMap.get(characteristic.getCategory().getId()).getAnnotationValue();
+                                String characteristicName = charCatMap.get(characteristic.getCategory().getId())
+                                                                      .getAnnotationValue();
                                 if (characteristicName.equalsIgnoreCase(SAMPLE_IN_VCF_KEY)) {
                                     sampleInVcf = characteristic.getValue().getAnnotationValue();
                                 }
@@ -197,8 +202,6 @@ public class MarsConversionService extends MarsReceiptProvider {
             evaMetadata.setSamples(samples);
             evaMetadata.setAnalyses(analyses);
         }
-
-        // TODO store ReceiptAccessionsMap as state and use this to build the successful receipt
 
         ObjectMapper mapper = new ObjectMapper();
         return mapper.valueToTree(evaMetadata);
